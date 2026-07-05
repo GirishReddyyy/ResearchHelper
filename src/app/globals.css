@@ -42,3 +42,18 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+:root {
+  --rh-void: #080b14;
+  --rh-surface: #0d1220;
+  --rh-card: #111827;
+  --rh-border: rgba(99,102,241,0.18);
+  --rh-border-hot: rgba(168,85,247,0.4);
+  --rh-purple: #a855f7;
+  --rh-indigo: #6366f1;
+  --rh-cyan: #06b6d4;
+  --rh-amber: #f59e0b;
+  --rh-green: #10b981;
+  --rh-pink: #ec4899;
+}
+

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Paper } from "@/lib/types";
 import styles from "../app/page.module.css";
 
-export default function ResultCard({ paper, index }: { paper: Paper; index: number }) {
+export default function ResultCard({ paper, index, onExplore }: { paper: Paper; index: number; onExplore?: (paper: Paper) => void }) {
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
@@ -114,6 +114,25 @@ export default function ResultCard({ paper, index }: { paper: Paper; index: numb
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </a>
+        
+        {onExplore && (
+          <button
+            onClick={() => onExplore(paper)}
+            style={{
+              background: "linear-gradient(135deg, rgba(168,85,247,0.15) 0%, rgba(99,102,241,0.15) 100%)",
+              color: "#a855f7",
+              border: "1px solid #a855f7",
+              padding: "0.4rem 0.8rem",
+              borderRadius: "0.5rem",
+              cursor: "pointer",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              transition: "all 0.2s"
+            }}
+          >
+            Explore →
+          </button>
+        )}
       </div>
     </article>
   );

@@ -101,3 +101,162 @@ export async function fetchPaperReferencesAndCitations(s2Id: string) {
 
   return { references, citations };
 }
+
+export async function getRecommendations(s2Id: string, limit: number = 20): Promise<Paper[]> {
+  const fields = "title,authors,year,publicationDate,abstract,externalIds,venue,citationCount,isOpenAccess,openAccessPdf,s2FieldsOfStudy";
+  const url = `https://api.semanticscholar.org/recommendations/v1/papers/forpaper/${s2Id}?limit=${limit}&fields=${fields}`;
+
+  const res = await fetchWithBackoff(url);
+  if (!res.ok) {
+    if (res.status === 404) return [];
+    throw new Error(`Semantic Scholar Recommendations API error: ${res.status} ${res.statusText}`);
+  }
+
+  const data = await res.json();
+  if (!data.recommendedPapers || !Array.isArray(data.recommendedPapers)) {
+    return [];
+  }
+
+  return data.recommendedPapers.map((item: any): Paper => {
+    const doi = item.externalIds?.DOI || null;
+    const paperId = item.paperId;
+    
+    return {
+      id: doi || paperId,
+      title: item.title,
+      authors: (item.authors || []).map((a: any) => ({
+        name: a.name,
+        id: a.authorId
+      })),
+      year: item.year || null,
+      publishedDate: item.publicationDate || null,
+      abstract: item.abstract || null,
+      doi: doi,
+      venue: item.venue || null,
+      citationCount: item.citationCount || 0,
+      concepts: (item.s2FieldsOfStudy || []).map((c: any) => c.category).filter(Boolean),
+      openAccessUrl: item.openAccessPdf?.url || null,
+      isPreprint: false,
+      sources: [SOURCE_NAME],
+      rawSourceIds: {
+        [SOURCE_NAME]: paperId
+      }
+    };
+  });
+}
+
+export async function getPaperDetails(s2Id: string): Promise<Paper | null> {
+  const fields = "title,authors,year,publicationDate,abstract,externalIds,venue,citationCount,isOpenAccess,openAccessPdf,s2FieldsOfStudy";
+  const url = `https://api.semanticscholar.org/graph/v1/paper/${s2Id}?fields=${fields}`;
+
+  const res = await fetchWithBackoff(url);
+  if (!res.ok) {
+    if (res.status === 404) return null;
+    throw new Error(`Semantic Scholar Details API error: ${res.status} ${res.statusText}`);
+  }
+
+  const item = await res.json();
+  if (!item.paperId) return null;
+
+  const doi = item.externalIds?.DOI || null;
+  const paperId = item.paperId;
+  
+  return {
+    id: doi || paperId,
+    title: item.title,
+    authors: (item.authors || []).map((a: any) => ({
+      name: a.name,
+      id: a.authorId
+    })),
+    year: item.year || null,
+    publishedDate: item.publicationDate || null,
+    abstract: item.abstract || null,
+    doi: doi,
+    venue: item.venue || null,
+    citationCount: item.citationCount || 0,
+    concepts: (item.s2FieldsOfStudy || []).map((c: any) => c.category).filter(Boolean),
+    openAccessUrl: item.openAccessPdf?.url || null,
+    isPreprint: false,
+    sources: [SOURCE_NAME],
+    rawSourceIds: {
+      [SOURCE_NAME]: paperId
+    }
+  };
+}
+
+export async function getRabbitHoleExpansion(s2Id: string): Promise<Paper[]> {
+  const fields = "title,authors,year,publicationDate,abstract,externalIds,venue,citationCount,isOpenAccess,openAccessPdf,s2FieldsOfStudy";
+  
+  const [recRes, refRes, citRes] = await Promise.all([
+    fetchWithBackoff(`https://api.semanticscholar.org/recommendations/v1/papers/forpaper/${s2Id}?limit=15&fields=${fields}`),
+    fetchWithBackoff(`https://api.semanticscholar.org/graph/v1/paper/${s2Id}/references?limit=10&fields=${fields}`),
+    fetchWithBackoff(`https://api.semanticscholar.org/graph/v1/paper/${s2Id}/citations?limit=10&fields=${fields}`)
+  ]);
+
+  let allPapers: Paper[] = [];
+  const seenIds = new Set<string>();
+  seenIds.add(s2Id); // Don't include the seed paper itself
+
+  const mapItemToPaper = (item: any): Paper | null => {
+    if (!item || !item.paperId) return null;
+    if (seenIds.has(item.paperId)) return null;
+    
+    seenIds.add(item.paperId);
+    const doi = item.externalIds?.DOI || null;
+    
+    return {
+      id: doi || item.paperId,
+      title: item.title || "Unknown Title",
+      authors: (item.authors || []).map((a: any) => ({
+        name: a.name,
+        id: a.authorId
+      })),
+      year: item.year || null,
+      publishedDate: item.publicationDate || null,
+      abstract: item.abstract || null,
+      doi: doi,
+      venue: item.venue || null,
+      citationCount: item.citationCount || 0,
+      concepts: (item.s2FieldsOfStudy || []).map((c: any) => c.category).filter(Boolean),
+      openAccessUrl: item.openAccessPdf?.url || null,
+      isPreprint: false,
+      sources: [SOURCE_NAME],
+      rawSourceIds: {
+        [SOURCE_NAME]: item.paperId
+      }
+    };
+  };
+
+  if (recRes.ok) {
+    const data = await recRes.json();
+    if (data.recommendedPapers) {
+      data.recommendedPapers.forEach((p: any) => {
+        const mapped = mapItemToPaper(p);
+        if (mapped) allPapers.push(mapped);
+      });
+    }
+  }
+
+  if (refRes.ok) {
+    const data = await refRes.json();
+    if (data.data) {
+      data.data.forEach((d: any) => {
+        const mapped = mapItemToPaper(d.citedPaper);
+        if (mapped) allPapers.push(mapped);
+      });
+    }
+  }
+
+  if (citRes.ok) {
+    const data = await citRes.json();
+    if (data.data) {
+      data.data.forEach((d: any) => {
+        const mapped = mapItemToPaper(d.citingPaper);
+        if (mapped) allPapers.push(mapped);
+      });
+    }
+  }
+
+  return allPapers;
+}
+

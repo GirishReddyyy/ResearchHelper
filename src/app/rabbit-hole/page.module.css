@@ -1,0 +1,231 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--rh-void);
+  color: #fff;
+  padding: 2rem;
+  gap: 2rem;
+  font-family: inherit;
+}
+
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--rh-border);
+  padding-right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, var(--rh-purple), var(--rh-indigo));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  background: var(--rh-surface);
+  border: 1px solid var(--rh-border);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  border-color: var(--rh-border-hot);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+}
+
+.button {
+  background: linear-gradient(135deg, var(--rh-purple), var(--rh-indigo));
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Breadcrumbs */
+.breadcrumbList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.breadcrumbItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  position: relative;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.breadcrumbItem:hover {
+  opacity: 0.8;
+}
+
+.breadcrumbItem:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 15px;
+  bottom: -15px;
+  width: 1px;
+  background: var(--rh-border);
+}
+
+.breadcrumbDot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--rh-surface);
+  border: 2px solid var(--rh-border);
+  margin-top: 4px;
+  z-index: 1;
+}
+
+.breadcrumbItem.active .breadcrumbDot {
+  background: linear-gradient(135deg, var(--rh-purple), var(--rh-indigo));
+  border-color: var(--rh-purple);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+}
+
+.breadcrumbText {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.breadcrumbItem.active .breadcrumbText {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Filters */
+.filterBar {
+  background: var(--rh-surface);
+  border: 1px solid var(--rh-border);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filterRow {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.filterInput {
+  background: var(--rh-void);
+  border: 1px solid var(--rh-border);
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.25rem;
+  width: 70px;
+  font-size: 0.85rem;
+}
+
+.checkbox {
+  accent-color: var(--rh-purple);
+  width: 1rem;
+  height: 1rem;
+}
+
+.conceptChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  background: transparent;
+  border: 1px solid var(--rh-border);
+  color: var(--text-secondary);
+  padding: 0.3rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chip:hover {
+  border-color: var(--rh-indigo);
+  color: #fff;
+}
+
+.chip.active {
+  background: rgba(168, 85, 247, 0.08);
+  border-color: var(--rh-purple);
+  color: var(--rh-purple);
+}
+
+/* Linear Feed */
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.seedCard {
+  border: 1px solid var(--rh-border-hot) !important;
+  background: linear-gradient(90deg, rgba(168,85,247,0.08) 0%, var(--rh-card) 100%) !important;
+  box-shadow: -4px 0 0 var(--rh-purple);
+}
+
+.hopIndicator {
+  background: rgba(168, 85, 247, 0.06);
+  color: var(--rh-purple);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  border: 1px dashed var(--rh-border-hot);
+}
