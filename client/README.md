@@ -17,7 +17,7 @@ This is the React frontend for the Research Intelligence Platform.
    npm install
    ```
 
-2. Configure environment variables by creating a `.env` file based on `.env.example`. Make sure `VITE_API_URL` points to the backend server.
+2. Configure environment variables by creating a `.env` file. Make sure `VITE_API_URL` points to the backend server.
 
 3. Start the development server:
    ```bash

@@ -18,7 +18,7 @@ This is the Express.js backend for the Research Intelligence Platform.
 
 2. Ensure you have a running MongoDB instance and a Redis instance (for BullMQ).
 
-3. Create a `.env` file based on `.env.example` and fill in the required values (MongoDB URI, Redis URL, JWT Secret).
+3. Create a `.env` file and fill in the required values (MongoDB URI, Redis URL, JWT Secret).
 
 4. Start the backend in development mode:
    ```bash
